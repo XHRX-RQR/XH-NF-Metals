@@ -292,11 +292,7 @@ black app.py
 
 本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
 
-## 👥 作者团队
 
-**主要开发者**: [您的姓名]
-**联系方式**: [您的邮箱]
-**项目主页**: [GitHub仓库地址]
 
 ### 致谢
 - Yahoo Finance API 提供价格数据
