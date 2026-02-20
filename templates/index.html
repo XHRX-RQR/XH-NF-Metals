@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> XH NF-Metals | Non-Ferrous Metals Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header id="app-header">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-atom"></i>
+                <span class="logo-text">XH NF-Metals</span>
+                <span class="logo-sub" data-i18n="subtitle">Real-Time Intelligence Dashboard</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="header-status" id="api-status">
+                <span class="status-dot offline"></span>
+                <span data-i18n="llm_offline">LLM Offline</span>
+            </div>
+            <button class="header-btn" id="lang-toggle" title="Toggle Language">
+                <i class="fas fa-language"></i>
+                <span>EN/CN</span>
+            </button>
+            <button class="header-btn" id="settings-btn" title="Settings">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="app-main">
+        <!-- Periodic Table Section -->
+        <section id="periodic-section">
+            <div class="section-header">
+                <h2 data-i18n="periodic_table">Periodic Table of Elements</h2>
+                <div class="legend" id="legend"></div>
+            </div>
+            <div id="periodic-table"></div>
+        </section>
+
+        <!-- Element Dashboard -->
+        <section id="element-dashboard" class="hidden">
+            <div class="dashboard-header">
+                <div class="dash-title">
+                    <button class="close-btn" id="close-dashboard" title="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="element-badge" id="dash-badge">
+                        <span class="badge-number" id="dash-number"></span>
+                        <span class="badge-symbol" id="dash-symbol"></span>
+                        <span class="badge-name" id="dash-name"></span>
+                    </div>
+                    <div class="element-meta" id="dash-meta"></div>
+                </div>
+                <div class="dash-actions">
+                    <button class="action-btn" id="refresh-btn" title="Refresh Data">
+                        <i class="fas fa-sync-alt"></i>
+                        <span data-i18n="refresh">Refresh</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tab-bar">
+                <button class="tab active" data-tab="overview">
+                    <i class="fas fa-chart-line"></i>
+                    <span data-i18n="tab_overview">Overview</span>
+                </button>
+                <button class="tab" data-tab="news">
+                    <i class="fas fa-newspaper"></i>
+                    <span data-i18n="tab_news">News & Intel</span>
+                </button>
+                <button class="tab" data-tab="analysis">
+                    <i class="fas fa-brain"></i>
+                    <span data-i18n="tab_analysis">AI Analysis</span>
+                </button>
+                <button class="tab" data-tab="chat">
+                    <i class="fas fa-comments"></i>
+                    <span data-i18n="tab_chat">AI Chat</span>
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Overview Tab -->
+                <div class="tab-pane active" id="pane-overview">
+                    <div class="overview-grid">
+                        <div class="card price-card" id="price-card">
+                            <div class="card-header">
+                                <h3 data-i18n="market_price">Market Price</h3>
+                                <span class="card-badge" id="price-source"></span>
+                            </div>
+                            <div class="card-body" id="price-body">
+                                <div class="loader" id="price-loader"><div class="spinner"></div></div>
+                            </div>
+                        </div>
+                        <div class="card chart-card" id="chart-card">
+                            <div class="card-header">
+                                <h3 data-i18n="price_chart">Price Chart (30D)</h3>
+                            </div>
+                            <div class="card-body chart-wrapper">
+                                <canvas id="price-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="card info-card" id="info-card">
+                            <div class="card-header">
+                                <h3 data-i18n="element_props">Element Properties</h3>
+                            </div>
+                            <div class="card-body" id="info-body"></div>
+                        </div>
+                        <div class="card apps-card" id="apps-card">
+                            <div class="card-header">
+                                <h3 data-i18n="key_apps">Key Applications</h3>
+                            </div>
+                            <div class="card-body" id="apps-body"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- News Tab -->
+                <div class="tab-pane" id="pane-news">
+                    <div class="news-controls">
+                        <div class="news-categories">
+                            <button class="cat-btn active" data-cat="news">
+                                <i class="fas fa-globe"></i>
+                                <span data-i18n="cat_all">All News</span>
+                            </button>
+                            <button class="cat-btn" data-cat="mining">
+                                <i class="fas fa-hard-hat"></i>
+                                <span data-i18n="cat_mining">Mining</span>
+                            </button>
+                            <button class="cat-btn" data-cat="policy">
+                                <i class="fas fa-gavel"></i>
+                                <span data-i18n="cat_policy">Policy</span>
+                            </button>
+                            <button class="cat-btn" data-cat="price">
+                                <i class="fas fa-dollar-sign"></i>
+                                <span data-i18n="cat_price">Price</span>
+                            </button>
+                            <button class="cat-btn" data-cat="industry">
+                                <i class="fas fa-industry"></i>
+                                <span data-i18n="cat_industry">Industry</span>
+                            </button>
+                            <button class="cat-btn" data-cat="supply">
+                                <i class="fas fa-truck"></i>
+                                <span data-i18n="cat_supply">Supply Chain</span>
+                            </button>
+                        </div>
+                        <button class="action-btn" id="summarize-btn">
+                            <i class="fas fa-magic"></i>
+                            <span data-i18n="ai_summary">AI Summary</span>
+                        </button>
+                    </div>
+                    <div id="news-summary" class="news-summary hidden"></div>
+                    <div id="news-list" class="news-list">
+                        <div class="loader"><div class="spinner"></div></div>
+                    </div>
+                </div>
+
+                <!-- AI Analysis Tab -->
+                <div class="tab-pane" id="pane-analysis">
+                    <div class="analysis-header">
+                        <p data-i18n="analysis_desc">Generate a comprehensive AI-powered market analysis for the selected metal based on current data and news.</p>
+                        <button class="action-btn primary" id="analyze-btn">
+                            <i class="fas fa-bolt"></i>
+                            <span data-i18n="generate_analysis">Generate Analysis</span>
+                        </button>
+                    </div>
+                    <div id="analysis-content" class="markdown-body"></div>
+                </div>
+
+                <!-- AI Chat Tab -->
+                <div class="tab-pane" id="pane-chat">
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="chat-welcome">
+                            <i class="fas fa-robot"></i>
+                            <p data-i18n="chat_welcome">Ask me anything about this metal — market trends, technical properties, supply chain, trade policies, and more.</p>
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <textarea id="chat-input" rows="1" placeholder="Ask a question..." data-i18n-placeholder="chat_placeholder"></textarea>
+                        <button class="send-btn" id="chat-send">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay hidden" id="settings-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-cog"></i> <span data-i18n="settings_title">LLM API Settings</span></h3>
+                <button class="close-btn" id="close-settings"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="setting-api-key">API Key</label>
+                    <input type="password" id="setting-api-key" placeholder="sk-..." autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="setting-base-url">Base URL</label>
+                    <input type="text" id="setting-base-url" value="https://api.openai.com/v1" placeholder="https://api.openai.com/v1">
+                </div>
+                <div class="form-group">
+                    <label for="setting-model">Model</label>
+                    <input type="text" id="setting-model" value="gpt-4o" placeholder="gpt-4o">
+                </div>
+                <div class="form-group">
+                    <label for="setting-temp">Temperature</label>
+                    <input type="range" id="setting-temp" min="0" max="1" step="0.1" value="0.7">
+                    <span class="range-value" id="temp-value">0.7</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="settings-cancel" data-i18n="cancel">Cancel</button>
+                <button class="btn-primary" id="settings-save" data-i18n="save">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

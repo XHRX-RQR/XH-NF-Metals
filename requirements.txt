@@ -1,0 +1,6 @@
+flask>=3.0
+requests>=2.31
+beautifulsoup4>=4.12
+duckduckgo-search>=6.0
+yfinance>=0.2
+openai>=1.0
